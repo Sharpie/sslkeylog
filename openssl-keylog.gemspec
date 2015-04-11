@@ -14,4 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = Dir.glob 'lib/**/*.rb'
   spec.require_paths = ['lib']
+
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec', '~> 3.0'
 end
