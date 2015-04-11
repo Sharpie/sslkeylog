@@ -1,4 +1,8 @@
 /.bundle/
 /Gemfile.lock
 /Gemfile.local
+/lib/**/*.bundle
+/lib/**/*.dll
+/lib/**/*.so
 /pkg/
+/tmp/
