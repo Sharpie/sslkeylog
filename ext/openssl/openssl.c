@@ -17,10 +17,12 @@ hex_encode(char *buffer, size_t size, const unsigned char *str)
 
 /* Capture SSL session keys in NSS Key Log Format
  *
+ * @param socket [OpenSSL::SSL::SSLSocket] A SSL socket instance to capture
+ *   data from.
  * @return [String] A string containing SSL session data.
  */
 static VALUE
-to_keylog(VALUE self)
+to_keylog(VALUE mod, VALUE socket)
 {
   SSL *ssl;
   // 14 byte header string
@@ -40,7 +42,7 @@ to_keylog(VALUE self)
   // SSLSocket instance passed to this function as `self` fails the type check.
   //
   // So, we live dangerously and go directly for the data pointer.
-  ssl = (SSL*)DATA_PTR(self);
+  ssl = (SSL*)DATA_PTR(socket);
 
   memcpy(buf, "CLIENT_RANDOM ", 14);
   i = 14;
@@ -60,12 +62,10 @@ to_keylog(VALUE self)
 }
 
 void
-Init_ssl_socket_extensions()
+Init_openssl()
 {
-  VALUE mOpenSSL = rb_const_get(rb_cObject, rb_intern("OpenSSL"));
-  VALUE mKeylog  = rb_const_get(mOpenSSL, rb_intern("Keylog"));
+  VALUE mSSLkeylog = rb_const_get(rb_cObject, rb_intern("SSLkeylog"));
 
-  VALUE mSessionExtensions = rb_define_module_under(mKeylog, "SSLSocketExtensions");
-
-  rb_define_method(mSessionExtensions, "to_keylog", to_keylog, 0);
+  VALUE mOpenSSL  = rb_define_module_under(mSSLkeylog, "OpenSSL");
+  rb_define_singleton_method(mOpenSSL, "to_keylog", to_keylog, 1);
 }

@@ -13,11 +13,11 @@ describe 'OpenSSL client connections' do
   after(:each)  { @ssl_socket.close }
 
   it 'returns a string starting with CLIENT_RANDOM' do
-    expect(@ssl_socket.to_keylog).to start_with('CLIENT_RANDOM')
+    expect(SSLkeylog::OpenSSL.to_keylog(@ssl_socket)).to start_with('CLIENT_RANDOM')
   end
 
   it 'contains the session master key' do
-    logged_key = @ssl_socket.to_keylog.split.last.strip
+    logged_key = SSLkeylog::OpenSSL.to_keylog(@ssl_socket).split.last.strip
     master_key = @ssl_socket.session.to_text.lines.find {|l| l.match /^\s*Master-Key:/}.partition(': ').last.strip
 
     expect(logged_key).to match(master_key)

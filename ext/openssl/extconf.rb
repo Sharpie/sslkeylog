@@ -14,4 +14,4 @@ unless openssl_config.nil?
 end
 
 dir_config('openssl', openssl_include, openssl_lib)
-create_makefile('openssl/keylog/ssl_socket_extensions')
+create_makefile('sslkeylog/openssl')

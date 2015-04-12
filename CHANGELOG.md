@@ -11,6 +11,10 @@ Backwards incompatible feature release.
   - +Break
     Library renamed from `OpenSSL::Keylog` to `SSLkeylog`.
 
+  - +Break
+    The library no longer extends (monkeypatches) the `OpenSSL::SSL::SSLSocket`
+    class.
+
 
 0.1.0
 -----

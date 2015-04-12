@@ -25,16 +25,16 @@ Use of the wrong header file can result in segmentation faults and other unpleas
 
 ## Usage
 
-Currently, the library just extends `OpenSSL::SSL::SSLSocket` objects with a `to_keylog` method that can be used to return NSS Key Log data:
+Currently, the library only provides a `to_keylog` method on the `SSLkeylog::OpenSSL` module that can be used to extract NSS Key Log data from `OpenSSL::SSL:SSLSocket` objects:
 
 ```ruby
-require 'openssl/keylog'
+require 'sslkeylog'
 
 socket = TCPSocket.new('github.com', '443')
 ssl_socket = OpenSSL::SSL::SSLSocket.new(socket)
 ssl_socket.connect
 
-ssl_socket.to_keylog
+SSLkeylog::OpenSSL.to_keylog(ssl_socket)
 # => "CLIENT_RANDOM 7374BF6508668783736B211242A4BC2CF075FC508E49B9797B038D6357370A10 C5BB2BDFEF788E7BB6ED0A37962BEEB140AC7F33DEF0E344F576D18305AF5A6C0121E069F1FF4CE4424530A83D443EFD\n"
 ```
 
