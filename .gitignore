@@ -1,6 +1,9 @@
 /.bundle/
+/.yardoc/
 /Gemfile.lock
 /Gemfile.local
+/*.gem
+/doc/
 /lib/**/*.bundle
 /lib/**/*.dll
 /lib/**/*.so

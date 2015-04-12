@@ -1,6 +1,7 @@
 language: ruby
 notifications:
   email: false
+bundler_args: --without development
 script: bundle exec rake spec
 rvm:
   - 2.0.0
