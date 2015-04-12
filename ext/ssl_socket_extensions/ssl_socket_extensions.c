@@ -15,6 +15,10 @@ hex_encode(char *buffer, size_t size, const unsigned char *str)
   }
 }
 
+/* Capture SSL session keys in NSS Key Log Format
+ *
+ * @return [String] A string containing SSL session data.
+ */
 static VALUE
 to_keylog(VALUE self)
 {
