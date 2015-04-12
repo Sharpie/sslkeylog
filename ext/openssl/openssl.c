@@ -68,4 +68,18 @@ Init_openssl()
 
   VALUE mOpenSSL  = rb_define_module_under(mSSLkeylog, "OpenSSL");
   rb_define_singleton_method(mOpenSSL, "to_keylog", to_keylog, 1);
+
+  /* The version string of the OpenSSL headers used to build this library.
+   *
+   * @return [String] The OPENSSL_VERSION_TEXT definition from the OpenSSL
+   *   header this library was built against.
+   */
+  rb_define_const(mOpenSSL, "OPENSSL_VERSION", rb_str_new2(OPENSSL_VERSION_TEXT));
+
+  /* The numeric version of the OpenSSL headers used to build this library.
+   *
+   * @return [Integer] The OPENSSL_VERSION_NUMBER definition from the OpenSSL
+   *   header this library was built against.
+   */
+  rb_define_const(mOpenSSL, "OPENSSL_VERSION_NUMBER", INT2NUM(OPENSSL_VERSION_NUMBER));
 }
