@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = OpenSSL::Keylog::VERSION
   spec.authors       = ['Charlie Sharpsteen']
   spec.email         = ['source@sharpsteen.net']
+  spec.license       = 'MIT'
 
   spec.summary       = 'An extension to the Ruby OpenSSL library that logs session keys in NSS Key Log Format.'
   spec.homepage      = 'https://github.com/Sharpie/openssl-keylog'
