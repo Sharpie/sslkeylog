@@ -1,5 +1,16 @@
-openssl-keylog
-==============
+SSLkeylog
+=========
+
+0.2.0
+-----
+
+(unreleased)
+
+Backwards incompatible feature release.
+
+  - +Break
+    Library renamed from `OpenSSL::Keylog` to `SSLkeylog`.
+
 
 0.1.0
 -----
