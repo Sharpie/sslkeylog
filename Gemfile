@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-group :development do
+group :docs do
   gem 'yard'
   gem 'kramdown'
 end
