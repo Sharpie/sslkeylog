@@ -1,6 +1,8 @@
 OpenSSL::Keylog
 ===============
 
+**NOTE:** This version of the library is a functional prototype. The name and implementation will definitely change.
+
 An extension to the Ruby OpenSSL library that logs session keys in [NSS Key Log Format][nss-format]. This log can be used by tools such as [Wireshark][wireshark] to decrypt data when analyzing network traffic.
 
 [![Build Status](https://travis-ci.org/Sharpie/openssl-keylog.svg?branch=master)](https://travis-ci.org/Sharpie/openssl-keylog)
