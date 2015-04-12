@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.summary       = 'An extension to the Ruby OpenSSL library that logs session keys in NSS Key Log Format.'
   spec.homepage      = 'https://github.com/Sharpie/openssl-keylog'
 
-  spec.files         = Dir['lib/**/*.rb', 'ext/**/*.c']
+  spec.files         = %x[git ls-files].split($/)
   spec.require_paths = ['lib']
   spec.extensions    = Dir['ext/**/extconf.rb']
 
