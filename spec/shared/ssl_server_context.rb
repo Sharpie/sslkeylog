@@ -14,6 +14,7 @@ shared_context 'ssl_server' do
       :Port         => ssl_server_port,
       :SSLEnable    => true,
       :SSLCertName  => [%w[CN localhost]],
+      :Logger       => WEBrick::Log.new(nil, WEBrick::BasicLog::WARN),
       )
     @thread = Thread.new { @server.start }
   end
