@@ -3,7 +3,7 @@ require 'rake/extensiontask'
 
 RSpec::Core::RakeTask.new(:spec)
 
-Rake::ExtensionTask.new 'session_extensions' do |ext|
+Rake::ExtensionTask.new 'ssl_socket_extensions' do |ext|
   ext.lib_dir = 'lib/openssl/keylog'
 end
 

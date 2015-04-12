@@ -7,12 +7,12 @@ to_keylog(VALUE self)
 }
 
 void
-Init_session_extensions()
+Init_ssl_socket_extensions()
 {
   VALUE mOpenSSL = rb_const_get(rb_cObject, rb_intern("OpenSSL"));
   VALUE mKeylog  = rb_const_get(mOpenSSL, rb_intern("Keylog"));
 
-  VALUE mSessionExtensions = rb_define_module_under(mKeylog, "SessionExtensions");
+  VALUE mSessionExtensions = rb_define_module_under(mKeylog, "SSLSocketExtensions");
 
   rb_define_method(mSessionExtensions, "to_keylog", to_keylog, 0);
 }

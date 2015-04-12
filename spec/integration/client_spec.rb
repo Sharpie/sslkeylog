@@ -13,6 +13,6 @@ describe 'OpenSSL client connections' do
   after(:each)  { @ssl_socket.close }
 
   it 'returns a string starting with CLIENT_RANDOM' do
-    expect(@ssl_socket.session.to_keylog).to start_with('CLIENT_RANDOM')
+    expect(@ssl_socket.to_keylog).to start_with('CLIENT_RANDOM')
   end
 end

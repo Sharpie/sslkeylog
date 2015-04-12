@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = Dir['lib/**/*.rb', 'ext/**/*.c']
   spec.require_paths = ['lib']
-  spec.extensions    = %w[ext/session_extensions/extconf.rb]
+  spec.extensions    = Dir['ext/**/extconf.rb']
 
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rake-compiler'
