@@ -26,6 +26,7 @@ hex_encode(char *buffer, size_t size, const unsigned char *str)
  *
  * @raise [TypeError] If `socket` is not an instance of
  *   `OpenSSL::SSL::SSLSocket`.
+ * @raise [RuntimeError] If `socket` has not been connected.
  */
 static VALUE
 to_keylog(VALUE mod, VALUE socket)
@@ -47,15 +48,17 @@ to_keylog(VALUE mod, VALUE socket)
       rb_obj_class(socket), cSSLSocket);
   }
 
-  // FIXME: Ensure the SSLSocket has an established connection. Otherwise, the
-  // required bits of the SSL data structure won't be present or initialized.
-
   // NOTE: Should be able to use Data_Get_Struct here, but for some reason the
   // SSLSocket instance passed to this function as `socket` fails the
   // type check.
   //
   // So, we live dangerously and go directly for the data pointer.
   ssl = (SSL*)DATA_PTR(socket);
+
+  // Check to see if the SSL data structure has been populated.
+  if ( !(ssl) || !(ssl->session) ){
+    rb_raise(rb_eRuntimeError, "%s", "Can't log SSL state. No connection established!");
+  }
 
   memcpy(buf, "CLIENT_RANDOM ", 14);
   i = 14;

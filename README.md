@@ -38,8 +38,6 @@ SSLkeylog::OpenSSL.to_keylog(ssl_socket)
 # => "CLIENT_RANDOM 7374BF6508668783736B211242A4BC2CF075FC508E49B9797B038D6357370A10 C5BB2BDFEF788E7BB6ED0A37962BEEB140AC7F33DEF0E344F576D18305AF5A6C0121E069F1FF4CE4424530A83D443EFD\n"
 ```
 
-The `to_keylog` method should not be called on an unconnected SSL Socket. Bad things will happen. Proper error checking for this situation will be added in a future version.
-
 
 ## Implementation
 
