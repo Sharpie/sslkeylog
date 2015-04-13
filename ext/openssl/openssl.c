@@ -1,6 +1,9 @@
 #include <ruby.h>
 #include <openssl/ssl.h>
 
+// Global variables pointing to Ruby namespaces of interest.
+VALUE mOpenSSL, mSSL, cSSLSocket;
+
 // Copies and hex encodes a char array, using two bytes in buffer for each byte
 // in str.
 static void
@@ -20,6 +23,9 @@ hex_encode(char *buffer, size_t size, const unsigned char *str)
  * @param socket [OpenSSL::SSL::SSLSocket] A SSL socket instance to capture
  *   data from.
  * @return [String] A string containing SSL session data.
+ *
+ * @raise [TypeError] If `socket` is not an instance of
+ *   `OpenSSL::SSL::SSLSocket`.
  */
 static VALUE
 to_keylog(VALUE mod, VALUE socket)
@@ -34,12 +40,19 @@ to_keylog(VALUE mod, VALUE socket)
   char buf[buf_len];
   unsigned int i;
 
-  // FIXME: Ensure this is called on an object of type SSLSocket that has an
-  // established connection. Otherwise, the required bits of the SSL data
-  // structure won't be present or initialized.
+  // PRIsVALUE is a special format string that causes functions like rb_raise
+  // to format data of type VALUE by calling `.to_s` on the Ruby object.
+  if (!rb_obj_is_instance_of(socket, cSSLSocket)) {
+    rb_raise(rb_eTypeError, "wrong argument (%"PRIsVALUE")! (Expected instance of %"PRIsVALUE")",
+      rb_obj_class(socket), cSSLSocket);
+  }
+
+  // FIXME: Ensure the SSLSocket has an established connection. Otherwise, the
+  // required bits of the SSL data structure won't be present or initialized.
 
   // NOTE: Should be able to use Data_Get_Struct here, but for some reason the
-  // SSLSocket instance passed to this function as `self` fails the type check.
+  // SSLSocket instance passed to this function as `socket` fails the
+  // type check.
   //
   // So, we live dangerously and go directly for the data pointer.
   ssl = (SSL*)DATA_PTR(socket);
@@ -64,22 +77,29 @@ to_keylog(VALUE mod, VALUE socket)
 void
 Init_openssl()
 {
+  rb_require("openssl");
+
+  // Retrieve OpenSSL namespaces.
+  mOpenSSL   = rb_const_get(rb_cObject, rb_intern("OpenSSL"));
+  mSSL       = rb_const_get(mOpenSSL,   rb_intern("SSL"));
+  cSSLSocket = rb_const_get(mSSL,       rb_intern("SSLSocket"));
+
   VALUE mSSLkeylog = rb_const_get(rb_cObject, rb_intern("SSLkeylog"));
 
-  VALUE mOpenSSL  = rb_define_module_under(mSSLkeylog, "OpenSSL");
-  rb_define_singleton_method(mOpenSSL, "to_keylog", to_keylog, 1);
+  VALUE mSSLkeylogOpenSSL  = rb_define_module_under(mSSLkeylog, "OpenSSL");
+  rb_define_singleton_method(mSSLkeylogOpenSSL, "to_keylog", to_keylog, 1);
 
   /* The version string of the OpenSSL headers used to build this library.
    *
    * @return [String] The OPENSSL_VERSION_TEXT definition from the OpenSSL
    *   header this library was built against.
    */
-  rb_define_const(mOpenSSL, "OPENSSL_VERSION", rb_str_new2(OPENSSL_VERSION_TEXT));
+  rb_define_const(mSSLkeylogOpenSSL, "OPENSSL_VERSION", rb_str_new2(OPENSSL_VERSION_TEXT));
 
   /* The numeric version of the OpenSSL headers used to build this library.
    *
    * @return [Integer] The OPENSSL_VERSION_NUMBER definition from the OpenSSL
    *   header this library was built against.
    */
-  rb_define_const(mOpenSSL, "OPENSSL_VERSION_NUMBER", INT2NUM(OPENSSL_VERSION_NUMBER));
+  rb_define_const(mSSLkeylogOpenSSL, "OPENSSL_VERSION_NUMBER", INT2NUM(OPENSSL_VERSION_NUMBER));
 }

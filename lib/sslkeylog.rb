@@ -1,5 +1,3 @@
-require 'openssl'
-
 module SSLkeylog
   require 'sslkeylog/version'
   require 'sslkeylog/openssl'
