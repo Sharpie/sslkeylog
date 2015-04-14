@@ -18,7 +18,7 @@ module SSLkeylog
     CLIENT_TRACER = TracePoint.new(:c_return) do |tp|
       if tp.method_id == :connect && tp.defined_class == ::OpenSSL::SSL::SSLSocket
         ssl_info = ::SSLkeylog::OpenSSL.to_keylog(tp.self)
-        ::SSLkeylog::Logging.logger.info(ssl_info)
+        ::SSLkeylog::Logging.logger.info(ssl_info) unless ssl_info.nil?
       end
     end
 

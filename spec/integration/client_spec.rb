@@ -14,9 +14,8 @@ describe 'OpenSSL client connections' do
   context 'before a connection is established' do
     after(:each) { @tcp_socket.close }
 
-    it 'raises a RuntimeError' do
-      expect { SSLkeylog::OpenSSL.to_keylog(@ssl_socket) }.to raise_error(RuntimeError,
-        /No connection established!$/)
+    it 'returns nil' do
+      expect(SSLkeylog::OpenSSL.to_keylog(@ssl_socket)).to be_nil
     end
   end
 

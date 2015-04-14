@@ -23,10 +23,10 @@ hex_encode(char *buffer, size_t size, const unsigned char *str)
  * @param socket [OpenSSL::SSL::SSLSocket] A SSL socket instance to capture
  *   data from.
  * @return [String] A string containing SSL session data.
+ * @return [nil] If `socket` has not been connected.
  *
  * @raise [TypeError] If `socket` is not an instance of
  *   `OpenSSL::SSL::SSLSocket`.
- * @raise [RuntimeError] If `socket` has not been connected.
  */
 static VALUE
 to_keylog(VALUE mod, VALUE socket)
@@ -57,7 +57,7 @@ to_keylog(VALUE mod, VALUE socket)
 
   // Check to see if the SSL data structure has been populated.
   if ( !(ssl) || !(ssl->session) ){
-    rb_raise(rb_eRuntimeError, "%s", "Can't log SSL state. No connection established!");
+    return Qnil;
   }
 
   memcpy(buf, "CLIENT_RANDOM ", 14);
