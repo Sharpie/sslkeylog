@@ -1,9 +1,9 @@
 SSLkeylog
 =========
 
-**NOTE:** This version of the library is a functional prototype. The name and implementation will definitely change.
+An Ruby library that logs SSL session keys from client connections in [NSS Key Log Format][nss-format]. This log can be used by tools such as [Wireshark][wireshark] to decrypt data when analyzing network traffic.
 
-An Ruby library that logs SSL session keys in [NSS Key Log Format][nss-format]. This log can be used by tools such as [Wireshark][wireshark] to decrypt data when analyzing network traffic.
+**NOTE:** This version of the library is a functional prototype. The implementation may change in the future.
 
 [![Build Status](https://travis-ci.org/Sharpie/sslkeylog.svg?branch=master)](https://travis-ci.org/Sharpie/sslkeylog)
 
@@ -25,16 +25,48 @@ Use of the wrong header file can result in segmentation faults and other unpleas
 
 ## Usage
 
-Currently, the library only provides a `to_keylog` method on the `SSLkeylog::OpenSSL` module that can be used to extract NSS Key Log data from `OpenSSL::SSL:SSLSocket` objects:
+The simplest way to use this library is to set an output file using the `SSLKEYLOG` environment variable and then require the `sslkeylog/autotrace` module:
+
+```ruby
+# In bash: export SSLKEYLOG=$HOME/sslkeylog.log
+require 'sslkeylog/autotrace'
+```
+
+If the `SSLKEYLOG` variable is unset, output will be sent to `$stderr`.
+
+
+Tracing can be enabled for specific portions of a Ruby program and output can be routed to any object which behaves like a standard Ruby `Logger`:
 
 ```ruby
 require 'sslkeylog'
+require 'stringio'
+
+output = StringIO.new
+SSLkeylog::Logging.logger = Logger.new(output)
+
+socket = TCPSocket.new('github.com', '443')
+ssl_socket = OpenSSL::SSL::SSLSocket.new(socket)
+
+SSLkeylog::Trace.enable
+ssl_socket.connect
+SSLkeylog::Trace.disable
+
+ssl_socket.close
+puts output.string
+# => I, [2015-04-14T12:51:33.016410 #90145]  INFO -- : CLIENT_RANDOM 20A97D56EAE0850DE6CECB63D4D587D863E62750AF3AF032453608DA5F8787C0 58260274A5BD57E1158AD2CAFEE1D8F671F900419F37B6A2DDB20FA0AC8B96AC0940398B33D42F366E2937151C751CED
+```
+
+Data can be extracted directly from `OpenSSL::SSL:SSLSocket` objects using the `to_keylog` method of the `SSLkeylog::OpenSSL` module:
+
+```ruby
+require 'sslkeylog/openssl'
 
 socket = TCPSocket.new('github.com', '443')
 ssl_socket = OpenSSL::SSL::SSLSocket.new(socket)
 ssl_socket.connect
 
-SSLkeylog::OpenSSL.to_keylog(ssl_socket)
+puts SSLkeylog::OpenSSL.to_keylog(ssl_socket)
+ssl_socket.close
 # => "CLIENT_RANDOM 7374BF6508668783736B211242A4BC2CF075FC508E49B9797B038D6357370A10 C5BB2BDFEF788E7BB6ED0A37962BEEB140AC7F33DEF0E344F576D18305AF5A6C0121E069F1FF4CE4424530A83D443EFD\n"
 ```
 
