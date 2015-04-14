@@ -4,7 +4,7 @@ gemspec
 
 group :docs do
   gem 'yard'
-  gem 'kramdown'
+  gem 'redcarpet'
 end
 
 eval_gemfile "#{__FILE__}.local" if File.exists? "#{__FILE__}.local"
