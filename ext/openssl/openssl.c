@@ -23,6 +23,7 @@ hex_encode(char *buffer, size_t size, const unsigned char *str)
  * @param socket [OpenSSL::SSL::SSLSocket] A SSL socket instance to capture
  *   data from.
  * @return [String] A string containing SSL session data.
+ * @return [nil] If `socket` has negotiated a SSLv2 connection.
  * @return [nil] If `socket` has not been connected.
  *
  * @raise [TypeError] If `socket` is not an instance of
@@ -56,17 +57,18 @@ to_keylog(VALUE mod, VALUE socket)
   ssl = (SSL*)DATA_PTR(socket);
 
   // Check to see if the SSL data structure has been populated.
-  if ( !(ssl) || !(ssl->session) ){
+  //
+  // NOTE: If the `s3` component is missing then SSLv2 is in use and we bail
+  // out. Such a thing is a bit crazy these days, but we could handle it in a
+  // more meaningful way by falling back to the old NSS Key Log format:
+  //
+  //     RSA Session-ID:<16 byte session id> Master-Key:<48 byte master key>
+  if ( !(ssl) || !(ssl->session) || !(ssl->s3) ){
     return Qnil;
   }
 
   memcpy(buf, "CLIENT_RANDOM ", 14);
   i = 14;
-  // NOTE: It is possible that the `s3` component is missing if SSLv2 is in
-  // use. Such a thing is a bit crazy these days, but if it happens, we should
-  // fall back to using the old format:
-  //
-  //     RSA <16 byte session id> <48 byte master key>
   hex_encode(buf + i, 32, ssl->s3->client_random);
   i += 64;
   buf[i++] = ' ';
