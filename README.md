@@ -69,16 +69,3 @@ puts SSLkeylog::OpenSSL.to_keylog(ssl_socket)
 ssl_socket.close
 # => "CLIENT_RANDOM 7374BF6508668783736B211242A4BC2CF075FC508E49B9797B038D6357370A10 C5BB2BDFEF788E7BB6ED0A37962BEEB140AC7F33DEF0E344F576D18305AF5A6C0121E069F1FF4CE4424530A83D443EFD\n"
 ```
-
-
-## Implementation
-
-The NSS Key Log format contains two pieces of information that can be used to decrypt SSL session data:
-
-  1. A string of 32 random bytes sent by the client during the "Client Hello" phase of the SSL handshake.
-
-  2. A string of 48 bytes generated during the handshake that is the "pre-master key" required to decrypt the data.
-
-The Ruby OpenSSL library exposes the pre-master key through the `to_text` method of  `OpenSSL::SSL::Session` objects. Unfortunately, there is no way to access the client random data at the Ruby level.
-
-However, many Ruby objects are simple wrappers for C data structures and the OpenSSL `SSL` struct does contains all the data we need --- including the client random data. The Ruby object which wraps `struct SSL` is `OpenSSL::SSL::SSLSocket`. This `to_keylog` method provided is a simple C extension which un-wraps `SSLSocket` objects at the C level and reads the data required form a NSS Key Log entry.

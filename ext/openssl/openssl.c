@@ -79,6 +79,29 @@ to_keylog(VALUE mod, VALUE socket)
   return rb_str_new(buf, buf_len);
 }
 
+/* Document-module: SSLkeylog::OpenSSL
+ *
+ * Generate NSS Key Log entries from Ruby OpenSSL objects
+ *
+ * The NSS Key Log format contains two pieces of information that can be used
+ * to decrypt SSL session data:
+ *
+ * 1. A string of 32 random bytes sent by the client during the
+ *    "Client Hello" phase of the SSL handshake.
+ *
+ * 2. A string of 48 bytes generated during the handshake that is the
+ *    "pre-master key" required to decrypt the data.
+ *
+ * The Ruby OpenSSL library exposes the pre-master key through the `to_text`
+ * method of  `OpenSSL::SSL::Session` objects. Unfortunately, there is no way
+ * to access the client random data at the Ruby level.  However, many Ruby
+ * objects are simple wrappers for C data structures and the OpenSSL `SSL`
+ * struct does contains all the data we need --- including the client random
+ * data. The Ruby object which wraps `struct SSL` is
+ * `OpenSSL::SSL::SSLSocket`. This `to_keylog` method provided is a simple C
+ * extension which un-wraps `SSLSocket` objects at the C level and reads the
+ * data required form a NSS Key Log entry.
+ */
 void
 Init_openssl()
 {
