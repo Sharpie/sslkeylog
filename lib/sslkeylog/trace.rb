@@ -17,7 +17,17 @@ module SSLkeylog
     # @return [TracePoint]
     CLIENT_TRACER = TracePoint.new(:c_return) do |tp|
       if tp.method_id == :connect && tp.defined_class == ::OpenSSL::SSL::SSLSocket
-        ssl_info = ::SSLkeylog::OpenSSL.to_keylog(tp.self)
+        ssl_socket = tp.self
+
+        if ssl_socket.io.is_a? IPSocket
+          # Log connection info
+          ::SSLkeylog::Logging.logger.debug do
+            _, port, _, ip = ssl_socket.io.peeraddr(false) # No reverse DNS lookup
+            "SSLSocket connect: #{ip}:#{port}\n"
+          end
+        end
+
+        ssl_info = ::SSLkeylog::OpenSSL.to_keylog(ssl_socket)
         ::SSLkeylog::Logging.logger.info(ssl_info) unless ssl_info.nil?
       end
     end

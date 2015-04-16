@@ -21,7 +21,14 @@ module SSLkeylog
     # @return [Proc]
     def self.default_formatter
       Proc.new do |severity, datetime, progname, msg|
-        msg
+        case severity
+        when 'DEBUG'
+          # Prefix debug-level message so they appear as comments in NSS Log
+          # Format.
+          "# " + msg
+        else
+          msg
+        end
       end
     end
 

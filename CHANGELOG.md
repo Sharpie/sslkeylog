@@ -1,6 +1,16 @@
 SSLkeylog
 =========
 
+0.3.0
+-----
+
+(unreleased)
+
+  - +New
+    IP address and port number are logged at DEBUG level when a SSLSocket
+    establishes a connection.
+
+
 0.2.0
 -----
 
