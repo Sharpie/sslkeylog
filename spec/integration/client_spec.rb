@@ -41,11 +41,12 @@ describe 'OpenSSL client connections' do
     before(:each) do
       logger           = Logger.new(subject)
       logger.formatter = SSLkeylog::Logging.default_formatter
-      SSLkeylog::Logging.logger = logger # TODO: Replace with a mock.
+      allow(SSLkeylog::Logging).to receive(:logger).and_return(logger)
 
       SSLkeylog::Trace.enable
       @ssl_socket.connect
     end
+
     after(:each)  do
       @ssl_socket.close
       SSLkeylog::Trace.disable
