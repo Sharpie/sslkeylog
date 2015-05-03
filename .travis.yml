@@ -5,5 +5,5 @@ bundler_args: --without docs
 script: bundle exec rake spec
 rvm:
   - 2.0.0
-  - 2.1.5
-  - 2.2.1
+  - 2.1.6
+  - 2.2.2
