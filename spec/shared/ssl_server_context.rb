@@ -1,12 +1,12 @@
 require 'webrick/https'
 
-# This context runs an OpenSSL::SSL:SSLServer that is accessible to tests.  The
+# This context runs an WEBrick::HTTPServer that is accessible to tests.  The
 # `ssl_server_port` and `ssl_server_address` will need to be specified before
 # this context is included:
 #
 #     let(:ssl_server_address) { ... }
 #     let(:ssl_server_port)    { ... }
-#     include 'ssl_server'
+#     include_context 'ssl_server'
 shared_context 'ssl_server' do
   before(:each) do
     @server = WEBrick::HTTPServer.new(
