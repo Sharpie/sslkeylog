@@ -1,7 +1,7 @@
 SSLkeylog
 =========
 
-An Ruby library that logs SSL session keys from client connections in [NSS Key Log Format][nss-format]. This log can be used by tools such as [Wireshark][wireshark] to decrypt data when analyzing network traffic.
+A Ruby library that logs SSL session keys from client connections in [NSS Key Log Format][nss-format]. This log can be used by tools such as [Wireshark][wireshark] to decrypt data when analyzing network traffic.
 
 **NOTE:** This version of the library is a functional prototype. The implementation may change in the future.
 

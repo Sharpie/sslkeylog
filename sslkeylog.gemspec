@@ -12,6 +12,11 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'A Ruby library that logs SSL session keys in NSS Key Log Format.'
   spec.homepage      = 'https://github.com/Sharpie/sslkeylog'
+  spec.description   <<-EOS
+    A Ruby library that logs SSL session keys from client connections in NSS
+    Key Log Format. This log can be used by tools such as Wireshark to decrypt
+    data when analyzing network traffic.
+  EOS
 
   spec.files         = %x[git ls-files].split($/)
   spec.require_paths = ['lib']
