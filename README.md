@@ -14,11 +14,11 @@ A Ruby library that logs SSL session keys from client connections in [NSS Key Lo
 
 ## Installation
 
-This gem uses a C extension to extract data from Ruby `OpenSSL::SSL::SSLSocket` objects. This means that the Gem will have to be built using the same OpenSSL headers that Ruby used during compilation.
+This gem uses a C extension to extract data from Ruby `OpenSSL::SSL::SSLSocket` objects. This means that the Gem will have to be built using the same OpenSSL headers that were used to compile the Ruby interpreter.
 
 The logic for locating the `include` directory is not particularly sophisticated, so the proper location may need to be specified during installation:
 
-    gem install openssl-keylog -- --with-openssl-include=...
+    gem install sslkeylog -- --with-openssl-include=...
 
 Use of the wrong header file can result in segmentation faults and other unpleasantness.
 
