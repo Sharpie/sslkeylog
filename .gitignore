@@ -9,3 +9,7 @@
 /lib/**/*.so
 /pkg/
 /tmp/
+*.o
+*.so
+Makefile
+mkmf.log

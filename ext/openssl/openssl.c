@@ -6,7 +6,7 @@ VALUE mOpenSSL, mSSL, cSSLSocket;
 
 // Copies and hex encodes a char array, using two bytes in buffer for each byte
 // in str.
-static void
+static unsigned int
 hex_encode(char *buffer, size_t size, const unsigned char *str)
 {
   static const char hex[] = "0123456789ABCDEF";
@@ -16,6 +16,55 @@ hex_encode(char *buffer, size_t size, const unsigned char *str)
     *(buffer++) = hex[str[i] >> 4];
     *(buffer++) = hex[str[i] & 15];
   }
+  return i;
+}
+
+/* Add SSL client random to buffer at designated position,
+ * and increment buffer position accordingly
+ *
+ * @param ssl [const SSL*] An SSL connection.
+ * @param buf [char*] A string to contain SSL session data.
+ * @param buf_pos [unsigned int] The current position within buffer
+ * @return [unsigned int] The size of the data written into the buffer
+ * @return [0] If the SSL library function failed
+ *
+ */
+static unsigned int
+get_client_random(const SSL *ssl, char *buf, unsigned int buf_pos) {
+    static const int client_random_len = 32;
+    unsigned char client_random[client_random_len];
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+    memcpy(client_random, ssl->s3->client_random, client_random_len);
+#else
+    if (SSL_get_client_random(ssl, client_random, client_random_len) != client_random_len) return 0;
+#endif
+    return hex_encode(buf + buf_pos, client_random_len, client_random);
+}
+
+/* Add SSL session master to buffer at designated position,
+ * and increment buffer position accordingly
+ *
+ * @param ssl [const SSL*] An SSL connection.
+ * @param buf [char*] A string to contain SSL session data.
+ * @param buf_pos [unsigned int] The current position within buffer
+ * @return [unsigned int] The size of the data written into the buffer
+ * @return [0] If the SSL library function failed
+ *
+ */
+static unsigned int
+get_master_key(const SSL *ssl, char *buf, unsigned int buf_pos) {
+    static const int master_key_len = 48;
+    unsigned char master_key[master_key_len];
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+    memcpy(master_key, ssl->session->master_key, master_key_len);
+#else
+    const SSL_SESSION *sess = SSL_get_session(ssl);
+    if (sess == NULL) return 0;
+    if (SSL_SESSION_get_master_key(sess, master_key, master_key_len) != master_key_len) return 0;
+#endif
+
+    return hex_encode(buf + buf_pos, master_key_len, master_key);
 }
 
 /* Capture SSL session keys in NSS Key Log Format
@@ -56,6 +105,7 @@ to_keylog(VALUE mod, VALUE socket)
   // So, we live dangerously and go directly for the data pointer.
   ssl = (SSL*)DATA_PTR(socket);
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
   // Check to see if the SSL data structure has been populated.
   //
   // NOTE: If the `s3` component is missing then SSLv2 is in use and we bail
@@ -66,13 +116,14 @@ to_keylog(VALUE mod, VALUE socket)
   if ( !(ssl) || !(ssl->session) || !(ssl->s3) ){
     return Qnil;
   }
+#endif
 
   memcpy(buf, "CLIENT_RANDOM ", 14);
   i = 14;
-  hex_encode(buf + i, 32, ssl->s3->client_random);
+  if (get_client_random(ssl, buf, i) == 0) return Qnil;
   i += 64;
   buf[i++] = ' ';
-  hex_encode(buf + i, 48, ssl->session->master_key);
+  if (get_master_key(ssl, buf, i) == 0) return Qnil;
   i += 96;
   buf[i++] = '\n';
 
